@@ -29,11 +29,21 @@ const SimulationConfigurator = ({ socketId, setPosition }) => {
 
   const handleSpaceObjectChange = (index, field, value) => {
     setSimulationParams((prev) => {
-      const updatedObjects = [...prev.space_objects];
+    const updatedObjects = [...prev.space_objects];
+
+    if (["position", "velocity"].includes(field)) {
+      const coerced = Object.fromEntries(
+        Object.entries(value).map(([k, v]) => [k, isNaN(Number(v)) ? v : parseFloat(v)])
+      );
+      updatedObjects[index][field] = coerced;
+    } else {
       updatedObjects[index][field] = isNaN(Number(value)) ? value : parseFloat(value);
-      return { ...prev, space_objects: updatedObjects };
+    }
+
+    return { ...prev, space_objects: updatedObjects };
     });
   };
+
 
   const addSpaceObject = () => {
     setSimulationParams((prev) => ({
